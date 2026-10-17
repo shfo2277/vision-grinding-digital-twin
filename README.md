@@ -19,6 +19,11 @@
 
 ## 결과
 
+<p align="center">
+  <img src="docs/transfer_learning_live.gif" width="720"><br>
+  <sub>전이학습 모델로 실제 카메라 영상에서 비드 인식 (왼쪽: 오버레이 / 오른쪽: 예측 마스크)</sub>
+</p>
+
 <table>
   <tr>
     <td align="center"><img src="docs/bead_overlay_live.png" width="400"><br><sub>로봇 카메라 실시간 비드 인식 (<code>/bead/overlay</code>)</sub></td>
@@ -35,9 +40,15 @@
 **1. 비드 세그멘테이션 모델** – `BeadTrain/`
 - `segmentation_models_pytorch` U-Net (ResNet34, ImageNet 사전학습), BCE + Dice 손실
 - `bead_train.py` – 그라인딩 전 비드 학습 (입력 1024) / `bead_train_end.py` – 그라인딩 후 비드 학습 (입력 1280, 비율 유지 패딩)
-- AI-Hub 용접 비드 데이터로 먼저 학습한 뒤, 실제 시편을 직접 촬영·라벨링한 이미지로 **전이학습**
-- 회전·이동, 밝기/대비, 노이즈, 모션 블러 증강 / EarlyStopping / ReduceLROnPlateau
-- 테스트 결과 (총 3,994장 중 Test 600장): **Pixel Accuracy 0.9949 · IoU 0.9672 · Dice 0.9812**
+- 초기에는 AI-Hub 용접 비드 공개 데이터로 모델을 실험했고, 최종 모델은 ImageNet 사전학습 인코더를 **실제 시편을 직접 촬영·라벨링한 이미지로 전이학습**
+- 회전·이동, 밝기/대비, 노이즈, 모션 블러 증강 / pos_weight 적용 BCE + Dice / ReduceLROnPlateau
+- 전이학습 결과 (Train 70% · Val 15% · Test 15% 분할, 50 epoch)
+
+  | 모델 | 데이터 | Test IoU | Test Dice |
+  | --- | --- | --- | --- |
+  | `1124unet.pth` | 직접 촬영 이미지 | 0.9462 | 0.9723 |
+  | `1125unet.pth` (ROS 노드에 사용) | 직접 촬영 이미지 | 0.9408 | 0.9692 |
+  | `1127unet.pth` | 라벨링 추가, 총 197장 | 0.9311 | 0.9641 |
 
 **2. 비드 인식 ROS 2 노드** – `BEADdetect/`
 - `bead_unet_node.py` – 카메라 영상 → U-Net → `/bead/mask`, `/bead/overlay` 발행
