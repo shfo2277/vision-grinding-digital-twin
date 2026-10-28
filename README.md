@@ -96,6 +96,11 @@
   <sub>직접 만든 ArUco GridBoard (왼쪽) · RViz에서 base → tool0 → camera TF 연결 확인 (오른쪽)</sub>
 </p>
 
+<p align="center">
+  <img src="docs/dt_grinder_camera.jpg" width="300"><br>
+  <sub>로봇 끝단의 스핀들 그라인더와 RealSense D415</sub>
+</p>
+
 D415를 로봇 끝에 장착한 상태에서 ArUco GridBoard(3×3, 마커 4 cm, 간격 1 cm)를 여러 자세로 촬영하고(목표 20개), `base_link → tool0` TF와 보드 자세로 OpenCV TSAI 방식의 `tool0 → camera` 변환을 계산했습니다.
 
 ## 4. 디지털 트윈 · 실제 로봇 연동
