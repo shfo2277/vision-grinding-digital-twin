@@ -22,19 +22,26 @@
 
 ## 결과
 
-<p align="center">
-  <img src="docs/transfer_learning_live.gif" width="720"><br>
-  <sub>전이학습 모델로 실제 카메라 영상에서 비드 인식 (왼쪽: 오버레이 / 오른쪽: 예측 마스크)</sub>
-</p>
+### 비드 인식: 전이학습 전 → 후
 
 <table>
   <tr>
-    <td align="center"><img src="docs/bead_overlay_live.png" width="400"><br><sub>로봇 카메라 실시간 비드 인식 (<code>/bead/overlay</code>)</sub></td>
-    <td align="center"><img src="docs/rviz_bead_path.png" width="400"><br><sub>RViz – 인식한 비드를 로봇 좌표계로 변환한 그라인딩 경로(흰색)</sub></td>
+    <th>개선 전</th>
+    <th>개선 후 (전이학습)</th>
   </tr>
   <tr>
-    <td align="center"><img src="docs/isaac_sim_grinder.png" width="400"><br><sub>Isaac Sim 디지털 트윈 – 로봇 끝단에 그라인더 엔드이펙터 정렬</sub></td>
-    <td align="center"><img src="docs/segmentation_result.png" width="400"><br><sub>[개선 전] U-Net 비드 세그멘테이션 – 시편 윗변 모서리까지 비드로 오인식 (원본 / 예측 마스크 / 오버레이)</sub></td>
+    <td align="center"><img src="docs/segmentation_result.png" width="420"><br><sub>시편 윗변 모서리까지 비드로 오인식 (원본 / 예측 마스크 / 오버레이)</sub></td>
+    <td align="center"><img src="docs/transfer_learning_live.gif" width="420"><br><sub>실제 카메라 영상에서 비드만 분리 (왼쪽: 오버레이 / 오른쪽: 예측 마스크)</sub></td>
+  </tr>
+</table>
+
+### 경로 생성 · 디지털 트윈
+
+<table>
+  <tr>
+    <td align="center"><img src="docs/bead_overlay_live.png" width="280"><br><sub>로봇 카메라 실시간 비드 인식 (<code>/bead/overlay</code>)</sub></td>
+    <td align="center"><img src="docs/rviz_bead_path.png" width="280"><br><sub>RViz – 인식한 비드를 로봇 좌표계로 변환한 그라인딩 경로(흰색)</sub></td>
+    <td align="center"><img src="docs/isaac_sim_grinder.png" width="280"><br><sub>Isaac Sim 디지털 트윈 – 로봇 끝단에 그라인더 엔드이펙터 정렬</sub></td>
   </tr>
 </table>
 
