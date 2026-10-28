@@ -34,7 +34,7 @@
   </tr>
   <tr>
     <td align="center"><img src="docs/isaac_sim_grinder.png" width="400"><br><sub>Isaac Sim 디지털 트윈 – 로봇 끝단에 그라인더 엔드이펙터 정렬</sub></td>
-    <td align="center"><img src="docs/segmentation_result.png" width="400"><br><sub>U-Net 비드 세그멘테이션 (원본 / 예측 마스크 / 오버레이)</sub></td>
+    <td align="center"><img src="docs/segmentation_result.png" width="400"><br><sub>[개선 전] U-Net 비드 세그멘테이션 – 시편 윗변 모서리까지 비드로 오인식 (원본 / 예측 마스크 / 오버레이)</sub></td>
   </tr>
 </table>
 
