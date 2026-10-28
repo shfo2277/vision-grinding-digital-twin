@@ -1,13 +1,13 @@
 # 디지털 트윈 기반 비전 로봇 그라인딩 경로 생성
 
 **연구실 과제 – 디지털 트윈을 이용한 로봇 원격 가공** (2025.07 ~ 2025.12, 한국생산기술연구원)
-<br><sub>한국생산기술연구원 뿌리고도기술개발사업 「고위험, 고난이도 파이프 제작 공정 대응 원격 제조 시스템 개발」 참여 · 후속 과제 → [bead-grinding-system](https://github.com/shfo2277/bead-grinding-system)</sub>
+<br><sub>한국생산기술연구원 과제 「고위험, 고난이도 파이프 제작 공정 대응 원격 제조 시스템 개발」(EH250004) 참여 · 후속 과제 → [bead-grinding-system](https://github.com/shfo2277/bead-grinding-system)</sub>
 
 기존 용접 비드 그라인딩은 미리 티칭한 고정 경로를 반복하기 때문에, 비드 위치나 형상이 바뀌면 경로를 다시 잡아야 합니다.
 이 프로젝트는 **RGB-D 카메라로 비드를 인식해 로봇 좌표계의 3D 그라인딩 경로를 만들고**, 실제 로봇(Stäubli RX160)과 동기화된
 **Isaac Sim 디지털 트윈**에서 확인한 뒤 실로봇에 적용하는 파이프라인을 구축했습니다.
 
-> 📄 노태희 외, 「디지털 트윈 환경을 활용한 비전 기반 로봇 그라인딩 경로 보정」, 2025 한국생산제조학회 추계학술대회 (2025.12, 제1저자 포스터 발표)
+> 📄 노태희 외, 「디지털 트윈 환경을 활용한 비전 기반 로봇 그라인딩 경로 보정」, 2025 한국생산제조학회 추계학술대회 (2025.12, 제1저자 포스터 발표) · [포스터 보기](docs/poster.jpg) · [초록](#학회-발표)
 
 <p align="center">
   <img src="docs/sim2real_sync.gif" width="900"><br>
@@ -137,6 +137,27 @@ D415를 로봇 끝에 장착한 상태에서 ArUco GridBoard(3×3, 마커 4 cm, 
 | MoveIt 계획은 되는데 실제 로봇이 움직이지 않음 | 드라이버와 MoveIt의 컨트롤러 이름 불일치, 궤적 시간(`time_from_start`)이 모두 0 | 컨트롤러 이름 매핑, IPTP 시간 파라미터화 적용 → 목표 위치까지 이동 확인 |
 | Isaac Sim에서 로봇이 쓰러진 채 움직임 ([GIF](docs/isaac_articulation_issue.gif)) | 루트 프림이 Articulation Root가 아니고, 링크에 Rigid Body/Collider가 없음 | Articulation Root 지정, Rigid Body 설정, 베이스를 월드에 고정 |
 | GPU 추론 노드를 호스트 ROS 2에서 실행할 수 없음 | 당시 구축한 RTX 5070용 PyTorch nightly 환경(Python 3.10)과 Jazzy의 rclpy(Python 3.12)를 한 프로세스에서 쓸 수 없음 | 비전 노드만 **ROS 2 Humble(Python 3.10) + PyTorch 컨테이너**로 분리 |
+
+## 학회 발표
+
+<table>
+  <tr>
+    <td width="300" align="center"><a href="docs/poster.jpg"><img src="docs/poster_thumb.jpg" width="260"></a><br><sub>클릭하면 포스터 원본</sub></td>
+    <td>
+      <b>디지털 트윈 환경을 활용한 비전 기반 로봇 그라인딩 경로 보정</b><br>
+      <i>Vision-Guided Path Correction System for Robotic Grinding Using Digital Twin</i><br>
+      노태희(제1저자), 홍태화, 김성현(교신) · 한국생산기술연구원<br>
+      2025 한국생산제조학회 추계학술대회, 2025.12.9 ~ 12.12, 부산<br><br>
+      <sub>Key Words: Industrial Robot, Segmentation, U-Net Algorithm, Remote Control</sub>
+    </td>
+  </tr>
+</table>
+
+<details>
+<summary>초록</summary>
+
+최근 산업용 로봇을 활용한 용접 비드 그라인딩 공정에 대한 수요가 증가하고 있다. 전통적인 용접 비드 그라인딩 공정은 수작업 비중이 높아 작업 효율이 낮고 생산성이 떨어진다. 이에 따라 산업용 로봇 자동화 방식이 많이 도입되고 있다. 그러나 기존 시스템은 사전에 설정된 고정 경로를 반복 수행하는 방식으로, 비드의 위치와 높이 변화를 인식하지 못하고 작업 위치가 달라질 경우 작업자가 수동으로 위치를 수정해야 한다. 따라서 본 연구에서는 이러한 한계를 극복하기 위해 비전 인식과 디지털 트윈 기반 경로 보정 기법을 결합한 로봇 그라인딩 자동화 시스템을 제안한다. 제안된 모델은 U-Net 기반 세그멘테이션 모델을 활용하여 용접 비드의 형상과 위치를 정확하게 인식하고, 로봇 좌표계 기준으로 로봇 공구 경로를 생성하였다. 제안된 시스템의 타당성을 검증하기 위해 NVIDIA Isaac Sim 기반의 디지털 트윈 환경을 구축하여 시뮬레이션을 수행하였다. 시뮬레이션 환경에서는 다양한 형상과 위치의 용접 비드에 대한 비전 인식 및 경로 생성 알고리즘의 성능을 검증하였으며, ROS 기반 인터페이스를 통해 실시간 경로 보정이 가능함을 확인하였다. 시뮬레이션 검증을 통해 최적화된 알고리즘을 실제 산업용 로봇 시스템에 적용하여 실험을 수행하였으며, 제안된 시스템이 비드 형상 변화에 능동적으로 대응하여 안정적인 그라인딩 작업을 수행함을 실증하였다.
+</details>
 
 ## 한계 및 개선 방향
 
