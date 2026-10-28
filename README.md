@@ -1,6 +1,7 @@
 # 디지털 트윈 기반 비전 로봇 그라인딩 경로 생성
 
 **연구실 과제 – 디지털 트윈을 이용한 로봇 원격 가공** (2025.07 ~ 2025.12, 한국생산기술연구원)
+<br><sub>한국생산기술연구원 뿌리고도기술개발사업 「고위험, 고난이도 파이프 제작 공정 대응 원격 제조 시스템 개발」 참여 · 후속 과제 → [bead-grinding-system](https://github.com/shfo2277/bead-grinding-system)</sub>
 
 기존 용접 비드 그라인딩은 미리 티칭한 고정 경로를 반복하기 때문에, 비드 위치나 형상이 바뀌면 경로를 다시 잡아야 합니다.
 이 프로젝트는 **RGB-D 카메라로 비드를 인식해 로봇 좌표계의 3D 그라인딩 경로를 만들고**, 실제 로봇(Stäubli RX160)과 동기화된
@@ -62,7 +63,7 @@
 | 모델 | `segmentation_models_pytorch` U-Net, ResNet34 (ImageNet 사전학습) |
 | 입력 / 데이터 | 1024×1024 / D415로 직접 촬영·라벨링(CVAT)한 197장, random 70/15/15 (seed 42) |
 | 증강 | HorizontalFlip, ShiftScaleRotate, BrightnessContrast, GaussNoise, MotionBlur |
-| 손실 / 최적화 | BCEWithLogitsLoss(pos_weight=2) + Dice / Adam 1e-4, ReduceLROnPlateau |
+| 손실 / 최적화 | BCEWithLogitsLoss(pos_weight=2) + Dice / Adam 1e-4, ReduceLROnPlateau, EarlyStopping(patience 7) |
 | 판정 threshold | 0.5 |
 
 | 모델 | 데이터 | Test IoU | Test Dice |
@@ -84,7 +85,8 @@
 </table>
 
 - 1024×1024 추론 mask를 원본·depth 해상도로 복원한 뒤, 같은 픽셀의 depth와 카메라 intrinsic으로 3D 점 역투영
-- 핸드-아이 결과로 `base_link` 좌표로 변환하고, **XY 평면 PCA 주방향**을 따라 웨이포인트 30개 생성 (Z는 평균값)
+- 고정 스캔 자세의 `base_link → tool0`와 핸드-아이 결과 `tool0 → camera`를 곱한 변환으로 `base_link` 좌표 변환
+- **XY 평면 PCA 주방향**을 따라 웨이포인트 30개 생성 (Z는 평균값, 유효 depth 점 최대 5000개 샘플링)
 - 웨이포인트에 대해 IK를 풀고 MoveIt의 **CHOMP** planning으로 궤적 계획
 
 ## 3. 핸드-아이 캘리브레이션 · `Calibration/handeye_calib_node.py`
@@ -110,6 +112,10 @@ D415를 로봇 끝에 장착한 상태에서 ArUco GridBoard(3×3, 마커 4 cm, 
   </tr>
 </table>
 
+**로봇 통신** – 오픈소스 [staubli_val3_driver](https://github.com/ros-industrial/staubli_val3_driver)의 VAL3 `ros_server`를 RX160 컨트롤러에 배포했습니다.
+컨트롤러가 TCP 서버 2개(Motion 11000 / Feedback 11002)를 열고, PC의 ROS 1 `industrial_robot_client`가 simple_message 프로토콜로 접속해
+관절 상태를 받고(약 50 Hz) MoveIt 궤적을 `FollowJointTrajectory`로 전달합니다. 같은 관절 상태가 브릿지를 거쳐 Isaac Sim 디지털 트윈에도 반영됩니다.
+
 ## 5. 실로봇 경로 정합 – 78 mm Z 오차
 
 비전으로 만든 경로를 실제 RX160에 처음 적용했을 때, 경로와 실제 로봇 작업 좌표 사이에 **Z축 약 78 mm 오차**가 있었습니다.
@@ -126,6 +132,7 @@ D415를 로봇 끝에 장착한 상태에서 ArUco GridBoard(3×3, 마커 4 cm, 
 
 | 문제 | 원인 | 해결 |
 | --- | --- | --- |
+| 컨트롤러에 `ros_server` 배포 실패 | FTP 업로드 시 파일 시스템 권한·경로 오류, TCP 서버 이름 불일치 | maintenance 계정으로 `/usr/usrapp`에 업로드, 컨트롤러 TCP 서버(EOS 13, Nagle Off, Timeout −1) 설정 후 SRS로 로드·실행 |
 | ROS 1 → ROS 2로 토픽이 넘어오지 않음 | Noetic–Foxy 브릿지의 DDS 설정·Domain ID 불일치, Foxy와 호스트 Jazzy 간 타입 해시 호환 문제 | Domain ID 통일 후 **Noetic ↔ Jazzy 브릿지를 소스 빌드**해 직접 연결 |
 | MoveIt 계획은 되는데 실제 로봇이 움직이지 않음 | 드라이버와 MoveIt의 컨트롤러 이름 불일치, 궤적 시간(`time_from_start`)이 모두 0 | 컨트롤러 이름 매핑, IPTP 시간 파라미터화 적용 → 목표 위치까지 이동 확인 |
 | Isaac Sim에서 로봇이 쓰러진 채 움직임 ([GIF](docs/isaac_articulation_issue.gif)) | 루트 프림이 Articulation Root가 아니고, 링크에 Rigid Body/Collider가 없음 | Articulation Root 지정, Rigid Body 설정, 베이스를 월드에 고정 |
