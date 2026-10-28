@@ -97,8 +97,8 @@
 </p>
 
 <p align="center">
-  <img src="docs/dt_grinder_camera.jpg" width="720"><br>
-  <sub>Stäubli RX160 셋업 · 로봇 끝단의 스핀들 그라인더와 RealSense D415</sub>
+  <img src="docs/dt_grinder_camera.jpg" width="560"><br>
+  <sub>로봇 끝단의 스핀들 그라인더와 RealSense D415 (근접 · 측면)</sub>
 </p>
 
 D415를 로봇 끝에 장착한 상태에서 ArUco GridBoard(3×3, 마커 4 cm, 간격 1 cm)를 여러 자세로 촬영하고(목표 20개), `base_link → tool0` TF와 보드 자세로 OpenCV TSAI 방식의 `tool0 → camera` 변환을 계산했습니다.
