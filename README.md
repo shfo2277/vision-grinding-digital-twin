@@ -6,7 +6,10 @@
 이 프로젝트는 **카메라로 실제 비드를 인식해 그 비드에 맞는 3D 그라인딩 경로를 만들고**, 실제 로봇(Staubli RX160)과 동기화된
 **Isaac Sim 디지털 트윈**에서 동작을 확인한 뒤 MoveIt으로 로봇을 움직이는 시스템을 구축했습니다.
 
-<!-- 실제 로봇 ↔ 디지털 트윈 동기화 영상 추가 예정 -->
+<p align="center">
+  <img src="docs/sim2real_sync.gif" width="900"><br>
+  <sub>실제 로봇 ↔ Isaac Sim 디지털 트윈 동기화 (왼쪽: Isaac Sim / 오른쪽: 실제 Staubli RX160, 동시 촬영) · <a href="docs/sim2real_sync.mp4">원본 영상(MP4)</a></sub>
+</p>
 
 ```
  RealSense D415 ─▶ U-Net 비드 세그멘테이션 ─▶ Depth로 3D 점 복원 ─▶ 핸드-아이 변환(카메라 → 로봇 base)
